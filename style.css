@@ -1,0 +1,76 @@
+body {
+  background: #111;
+  color: white;
+  text-align: center;
+  font-family: Arial;
+}
+
+/* --- Arena / Stickmen --- */
+#arena {
+  width: 500px;
+  height: 300px;
+  margin: 20px auto;
+  border: 2px solid #444;
+  position: relative;
+}
+
+.stickman {
+  position: absolute;
+  bottom: 20px;
+  width: 60px;
+  height: 140px;
+  transform-style: preserve-3d;
+  transition: transform 0.25s;
+}
+
+#player { left: 100px; transform: rotateY(20deg); }
+#ai { right: 100px; transform: rotateY(-20deg); }
+
+.stickman div { position: absolute; background: white; }
+.enemy div { background: red; }
+
+.head { width: 20px; height: 20px; border-radius: 50%; top: 0; left: 20px; }
+.body { width: 4px; height: 50px; top: 20px; left: 28px; }
+.arm { width: 30px; height: 4px; top: 35px; }
+.arm.left { left: -5px; } .arm.right { right: -5px; }
+.leg { width: 25px; height: 4px; top: 70px; }
+.leg.left { left: 5px; transform: rotate(25deg); }
+.leg.right { right: 5px; transform: rotate(-25deg); }
+
+/* --- Buttons --- */
+#controls button { width: 60px; height: 60px; font-size: 24px; margin: 5px; cursor: pointer; }
+.hidden { display: none; }
+
+/* --- Win Screen / Shop / Cutscene --- */
+#winScreen, #shop, #cutscene {
+  position: fixed; top:0; left:0; width:100%; height:100%;
+  display:flex; justify-content:center; align-items:center;
+  flex-direction: column; background: rgba(0,0,0,0.9);
+  color:white; font-size:48px; z-index:100; display:none;
+}
+
+/* --- Cutscene --- */
+#cutscene { position: fixed; top:0; left:0; width:100%; height:100%; background:#111; justify-content:center; align-items:center; }
+
+#circlePlayer, #circleAI {
+  width: 100px; height: 100px;
+  border-radius: 50%;
+  position: absolute; bottom: 100px;
+  transition: all 0.5s;
+}
+#circlePlayer { left: 30%; background:white; }
+#circleAI { right: 30%; background:red; }
+
+#shadowBox {
+  position: absolute; top:0; left:0; width:0; height:0;
+  background: linear-gradient(135deg, purple, black);
+  opacity: 0.9; transition: all 0.7s;
+  z-index: 50;
+}
+
+#ariseText {
+  position: absolute; top:40%; width:100%; text-align:center;
+  font-size:72px; color:purple; font-weight:bold; opacity:0;
+  transition: opacity 0.5s;
+  z-index:60;
+}

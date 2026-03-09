@@ -1,0 +1,59 @@
+<div id="arena">
+  <!-- Stickmen -->
+  <div id="player" class="stickman">
+    <div class="head"></div>
+    <div class="body"></div>
+    <div class="arm left"></div>
+    <div class="arm right"></div>
+    <div class="leg left"></div>
+    <div class="leg right"></div>
+  </div>
+
+  <div id="ai" class="stickman enemy">
+    <div class="head"></div>
+    <div class="body"></div>
+    <div class="arm left"></div>
+    <div class="arm right"></div>
+    <div class="leg left"></div>
+    <div class="leg right"></div>
+  </div>
+</div>
+
+<h2 id="mode">MODE: ATTACK</h2>
+<h3 id="combo">Your Combo: 0 | AI Combo: 0</h3>
+<h3 id="status">Choose a direction!</h3>
+<h3 id="coins">Shadow Coins: 60</h3>
+
+<div id="controls">
+  <button data-dir="up">⬆</button><br>
+  <button data-dir="left">⬅</button>
+  <button data-dir="down">⬇</button>
+  <button data-dir="right">➡</button>
+</div>
+
+<button id="restart">🔄 Restart</button>
+<button id="shopButton">🛒 Shop</button>
+
+<!-- SHOP -->
+<div id="shop" class="hidden">
+  <h1>Shadow Shop</h1>
+  <p>Shadow Coins: <span id="shopCoins">0</span></p>
+  <button id="buyArise">Buy Ending Finisher "Arise" (Cost: 60)</button><br>
+  <button id="equipArise" class="hidden">Equip Arise</button><br>
+  <button id="resetData">Reset Data</button><br>
+  <button id="closeShop">Close Shop</button>
+</div>
+
+<!-- WIN SCREEN -->
+<div id="winScreen">
+  <h1 id="winText"></h1>
+  <button id="restartWin">Play Again</button>
+</div>
+
+<!-- CUTSCENE -->
+<div id="cutscene">
+  <div id="circlePlayer" class="circle"></div>
+  <div id="circleAI" class="circle enemy"></div>
+  <div id="shadowBox"></div>
+  <div id="ariseText">ARISE!</div>
+</div>
