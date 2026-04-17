@@ -1,76 +1,166 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shadow Stick Fight</title>
-
-<link rel="stylesheet" href="style.css">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shadow Duel: Arise</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
-<div id="arena">
-  <!-- Stickmen -->
-  <div id="player" class="stickman">
-    <div class="head"></div>
-    <div class="body"></div>
-    <div class="arm left"></div>
-    <div class="arm right"></div>
-    <div class="leg left"></div>
-    <div class="leg right"></div>
+  <div id="notification-area"></div>
+
+  <div class="game-container">
+    
+    <div class="hud">
+      <div class="top-row">
+        <div id="mode">MODE: ATTACK</div>
+        <div id="coins"><i class="fas fa-gem"></i> <span id="coin-count">0</span></div>
+      </div>
+      <div id="status">Choose a direction to strike!</div>
+      <div id="combo-display">
+        <span class="p-combo">YOU: <span id="p-score">0</span></span> | 
+        <span class="ai-combo">AI: <span id="ai-score">0</span></span>
+      </div>
+    </div>
+
+    <div id="arena">
+      <div class="grid-bg"></div>
+      
+      <!-- Player (White) -->
+      <div id="player" class="stickman">
+        <div class="head"></div>
+        <div class="body"></div>
+        <div class="arm left"></div>
+        <div class="arm right"></div>
+        <div class="leg left"></div>
+        <div class="leg right"></div>
+        <div class="shadow-effect"></div>
+      </div>
+
+      <!-- AI (Red) -->
+      <div id="ai" class="stickman enemy">
+        <div class="head"></div>
+        <div class="body"></div>
+        <div class="arm left"></div>
+        <div class="arm right"></div>
+        <div class="leg left"></div>
+        <div class="leg right"></div>
+        <div class="shadow-effect"></div>
+      </div>
+    </div>
+
+    <div id="controls">
+      <button data-dir="up" class="dir-btn" id="btn-up"><i class="fas fa-chevron-up"></i></button>
+      <div class="middle-row">
+        <button data-dir="left" class="dir-btn" id="btn-left"><i class="fas fa-chevron-left"></i></button>
+        <button data-dir="down" class="dir-btn" id="btn-down"><i class="fas fa-chevron-down"></i></button>
+        <button data-dir="right" class="dir-btn" id="btn-right"><i class="fas fa-chevron-right"></i></button>
+      </div>
+    </div>
+
+    <div class="menu-row">
+      <button id="inventoryBtn" class="shadow-btn"><i class="fas fa-boxes"></i> Inventory</button>
+      <button id="shopButton" class="shadow-btn"><i class="fas fa-store"></i> Shop</button>
+      <button id="restart" class="shadow-btn"><i class="fas fa-redo"></i> Restart</button>
+    </div>
   </div>
 
-  <div id="ai" class="stickman enemy">
-    <div class="head"></div>
-    <div class="body"></div>
-    <div class="arm left"></div>
-    <div class="arm right"></div>
-    <div class="leg left"></div>
-    <div class="leg right"></div>
+  <!-- SHOP MODAL -->
+  <div id="shop" class="modal hidden">
+    <div class="modal-content shadow-box">
+      <h1>Shadow Shop</h1>
+      <p>Coins: <span id="shopCoins">0</span></p>
+      <div class="shop-items">
+        <div class="shop-item">
+          <h3>Skill: Arise</h3>
+          <p>Cost: 60 Coins</p>
+          <p><em>Equip to UP to auto-trigger on kill.</em></p>
+          <button id="buyArise" class="action-btn">Buy</button>
+          <span id="ownedTag" class="owned-tag hidden">OWNED</span>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button id="closeShop" class="action-btn">Close</button>
+        <button id="resetData" class="action-btn danger">Reset Data</button>
+      </div>
+    </div>
   </div>
-</div>
 
-<h2 id="mode">MODE: ATTACK</h2>
-<h3 id="combo">Your Combo: 0 | AI Combo: 0</h3>
-<h3 id="status">Choose a direction!</h3>
-<h3 id="coins">Shadow Coins: 60</h3>
+  <!-- INVENTORY MODAL -->
+  <div id="inventory" class="modal hidden">
+    <div class="modal-content shadow-box">
+      <h1>Skill Inventory</h1>
+      <p>Equip finishers to directions.</p>
+      
+      <div class="equip-grid">
+        <div class="equip-slot" data-dir="up">
+          <span>UP</span>
+          <div class="skill-icon empty"><i class="fas fa-ban"></i></div>
+        </div>
+        <div class="equip-slot" data-dir="left">
+          <span>LEFT</span>
+          <div class="skill-icon empty"><i class="fas fa-ban"></i></div>
+        </div>
+        <div class="equip-slot" data-dir="down">
+          <span>DOWN</span>
+          <div class="skill-icon empty"><i class="fas fa-ban"></i></div>
+        </div>
+        <div class="equip-slot" data-dir="right">
+          <span>RIGHT</span>
+          <div class="skill-icon empty"><i class="fas fa-ban"></i></div>
+        </div>
+      </div>
 
-<div id="controls">
-  <button data-dir="up">⬆</button><br>
-  <button data-dir="left">⬅</button>
-  <button data-dir="down">⬇</button>
-  <button data-dir="right">➡</button>
-</div>
+      <div class="modal-actions">
+        <button id="closeInventory" class="action-btn">Close</button>
+      </div>
+    </div>
+  </div>
 
-<button id="restart">🔄 Restart</button>
-<button id="shopButton">🛒 Shop</button>
+  <!-- WIN SCREEN -->
+  <div id="winScreen" class="modal hidden">
+    <div class="modal-content shadow-box">
+      <h1 id="winText">VICTORY</h1>
+      <p id="rewardText">+10 Coins</p>
+      <button id="restartWin" class="action-btn">Play Again</button>
+    </div>
+  </div>
 
-<!-- SHOP -->
-<div id="shop" class="hidden">
-  <h1>Shadow Shop</h1>
-  <p>Shadow Coins: <span id="shopCoins">0</span></p>
-  <button id="buyArise">Buy Ending Finisher "Arise" (Cost: 60)</button><br>
-  <button id="equipArise" class="hidden">Equip Arise</button><br>
-  <button id="resetData">Reset Data</button><br>
-  <button id="closeShop">Close Shop</button>
-</div>
+  <!-- CUTSCENE -->
+  <div id="cutscene-stage" class="hidden">
+    <div class="cinematic-bg"></div>
+    <div id="sys-text" class="glitch-text">SYSTEM WARNING</div>
+    
+    <div class="cutscene-actor" id="actor-player">
+      <div class="stickman">
+        <div class="head"></div>
+        <div class="body"></div>
+        <div class="arm left"></div>
+        <div class="arm right"></div>
+        <div class="leg left"></div>
+        <div class="leg right"></div>
+      </div>
+      <div class="actor-name">SHADOW MONARCH</div>
+    </div>
 
-<!-- WIN SCREEN -->
-<div id="winScreen">
-  <h1 id="winText"></h1>
-  <button id="restartWin">Play Again</button>
-</div>
+    <div class="cutscene-actor" id="actor-enemy">
+      <div class="stickman enemy">
+        <div class="head"></div>
+        <div class="body"></div>
+        <div class="arm left"></div>
+        <div class="arm right"></div>
+        <div class="leg left"></div>
+        <div class="leg right"></div>
+      </div>
+      <div class="actor-name">TARGET</div>
+    </div>
 
-<!-- CUTSCENE -->
-<div id="cutscene">
-  <div id="circlePlayer" class="circle"></div>
-  <div id="circleAI" class="circle enemy"></div>
-  <div id="shadowBox"></div>
-  <div id="ariseText">ARISE!</div>
-</div>
+    <h1 id="arise-big">ARISE</h1>
+    <div class="vignette"></div>
+  </div>
 
-<script src="game.js"></script>
-
+  <script src="game.js"></script>
 </body>
 </html>
