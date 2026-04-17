@@ -1,76 +1,245 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap');
+
+:root {
+  --shadow-primary: #9d4edd;
+  --neon-blue: #00d2ff;
+  --neon-red: #ff3333;
+  --dark-bg: #050505;
+}
+
 body {
-  background: #111;
-  color: white;
+  background: var(--dark-bg);
+  color: #e0e0e0;
   text-align: center;
-  font-family: Arial;
+  font-family: 'Rajdhani', sans-serif;
+  margin: 0;
+  overflow: hidden;
+  user-select: none;
 }
 
-/* --- Arena / Stickmen --- */
-#arena {
-  width: 500px;
-  height: 300px;
-  margin: 20px auto;
-  border: 2px solid #444;
-  position: relative;
-}
-
-.stickman {
-  position: absolute;
-  bottom: 20px;
-  width: 60px;
-  height: 140px;
-  transform-style: preserve-3d;
-  transition: transform 0.25s;
-}
-
-#player { left: 100px; transform: rotateY(20deg); }
-#ai { right: 100px; transform: rotateY(-20deg); }
-
-.stickman div { position: absolute; background: white; }
-.enemy div { background: red; }
-
-.head { width: 20px; height: 20px; border-radius: 50%; top: 0; left: 20px; }
-.body { width: 4px; height: 50px; top: 20px; left: 28px; }
-.arm { width: 30px; height: 4px; top: 35px; }
-.arm.left { left: -5px; } .arm.right { right: -5px; }
-.leg { width: 25px; height: 4px; top: 70px; }
-.leg.left { left: 5px; transform: rotate(25deg); }
-.leg.right { right: 5px; transform: rotate(-25deg); }
-
-/* --- Buttons --- */
-#controls button { width: 60px; height: 60px; font-size: 24px; margin: 5px; cursor: pointer; }
-.hidden { display: none; }
-
-/* --- Win Screen / Shop / Cutscene --- */
-#winScreen, #shop, #cutscene {
-  position: fixed; top:0; left:0; width:100%; height:100%;
-  display:flex; justify-content:center; align-items:center;
-  flex-direction: column; background: rgba(0,0,0,0.9);
-  color:white; font-size:48px; z-index:100; display:none;
-}
-
-/* --- Cutscene --- */
-#cutscene { position: fixed; top:0; left:0; width:100%; height:100%; background:#111; justify-content:center; align-items:center; }
-
-#circlePlayer, #circleAI {
-  width: 100px; height: 100px;
-  border-radius: 50%;
-  position: absolute; bottom: 100px;
-  transition: all 0.5s;
-}
-#circlePlayer { left: 30%; background:white; }
-#circleAI { right: 30%; background:red; }
-
-#shadowBox {
-  position: absolute; top:0; left:0; width:0; height:0;
-  background: linear-gradient(135deg, purple, black);
-  opacity: 0.9; transition: all 0.7s;
-  z-index: 50;
-}
-
-#ariseText {
-  position: absolute; top:40%; width:100%; text-align:center;
-  font-size:72px; color:purple; font-weight:bold; opacity:0;
+.game-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: radial-gradient(circle at center, #111 0%, #000 100%);
   transition: opacity 0.5s;
-  z-index:60;
 }
+
+body.cutscene-mode .game-container { display: none; }
+body.cutscene-mode { overflow: hidden; background: black; }
+
+/* --- NOTIFICATIONS --- */
+#notification-area {
+  position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+  width: 90%; max-width: 400px; z-index: 999; pointer-events: none;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.notification {
+  background: rgba(10, 10, 10, 0.95); border: 1px solid var(--shadow-primary);
+  color: #fff; padding: 12px; border-radius: 4px; font-family: 'Orbitron';
+  animation: slideIn 0.3s ease-out; font-size: 0.8rem;
+  box-shadow: 0 0 15px var(--shadow-primary);
+}
+@keyframes slideIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+/* --- UI --- */
+.hud { width: 100%; max-width: 600px; margin-bottom: 15px; z-index: 10; }
+.top-row { display: flex; justify-content: space-between; font-size: 1.3rem; font-weight: bold; }
+#coins { color: var(--shadow-primary); }
+#mode { color: #fff; letter-spacing: 2px; }
+#status { color: #aaa; font-size: 1.1rem; height: 25px; margin: 5px 0; font-weight: 600; }
+#combo-display { font-size: 1.2rem; }
+.p-combo { color: var(--neon-blue); }
+.ai-combo { color: var(--neon-red); }
+
+#arena {
+  width: 100%; max-width: 600px; height: 350px;
+  border-bottom: 3px solid var(--neon-blue);
+  background: #080808; position: relative; margin-bottom: 20px;
+  box-shadow: 0 0 30px rgba(0, 210, 255, 0.1); overflow: hidden;
+}
+
+.grid-bg {
+  position: absolute; width: 200%; height: 200%; top: -50%; left: -50%;
+  background-image: linear-gradient(#111 1px, transparent 1px), linear-gradient(90deg, #111 1px, transparent 1px);
+  background-size: 20px 20px; opacity: 0.3;
+  transform: perspective(500px) rotateX(60deg);
+  animation: gridMove 10s linear infinite;
+}
+@keyframes gridMove { 0% { transform: perspective(500px) rotateX(60deg) translateY(0); } 100% { transform: perspective(500px) rotateX(60deg) translateY(20px); } }
+
+/* --- STICKMEN STYLING --- */
+.stickman {
+  position: absolute; bottom: 50px; width: 50px; height: 130px;
+}
+
+#player { left: 25%; }
+#ai { right: 25%; /* Removed transform: scaleX(-1) to let logic handle direction visually */ }
+
+/* COLORS: Player White, Enemy Red */
+.stickman div { position: absolute; background: #fff; }
+.enemy div { background: var(--neon-red); }
+
+.head { width: 20px; height: 20px; border-radius: 50%; top: 0; left: 15px; }
+.body { width: 4px; height: 40px; top: 20px; left: 23px; }
+
+/* ARMS: Static */
+.arm { width: 4px; height: 30px; top: 25px; }
+.arm.left { left: 5px; transform: rotate(20deg); }
+.arm.right { right: 5px; transform: rotate(-20deg); }
+
+.leg { width: 4px; height: 40px; top: 60px; transform-origin: top center; }
+.leg.left { left: 10px; transform: rotate(10deg); }
+.leg.right { right: 10px; transform: rotate(-10deg); }
+
+.shadow-effect {
+  position: absolute; bottom: -10px; left: 5px; width: 40px; height: 10px;
+  background: rgba(0,0,0,0.6); border-radius: 50%; filter: blur(4px);
+}
+
+/* --- MOVEMENT ANIMATIONS --- */
+
+/* UP: Pure Vertical Movement Up */
+.stickman.lunge-up { animation: lungeUpAnim 0.2s ease-out; }
+@keyframes lungeUpAnim {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-60px); }
+  100% { transform: translateY(0); }
+}
+
+/* DOWN: Pure Slide Down */
+.stickman.lunge-down { animation: slideDownAnim 0.2s ease-out; }
+.stickman.dodge-down { animation: slideDownAnim 0.2s ease-out; }
+
+@keyframes slideDownAnim {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(40px); }
+  100% { transform: translateY(0); }
+}
+
+/* LEFT: Pure Horizontal Movement Left */
+.stickman.lunge-left { animation: lungeLeftAnim 0.2s ease-out; }
+@keyframes lungeLeftAnim {
+  0% { transform: translateX(0); }
+  50% { transform: translateX(-50px); }
+  100% { transform: translateX(0); }
+}
+
+/* RIGHT: Pure Horizontal Movement Right */
+.stickman.lunge-right { animation: lungeRightAnim 0.2s ease-out; }
+@keyframes lungeRightAnim {
+  0% { transform: translateX(0); }
+  50% { transform: translateX(50px); }
+  100% { transform: translateX(0); }
+}
+
+/* DODGE SIDE: Slide sideways */
+.stickman.dodge-side { animation: dodgeSideAnim 0.3s ease-out; }
+@keyframes dodgeSideAnim {
+  0% { transform: translateX(0); }
+  50% { transform: translateX(-20px); }
+  100% { transform: translateX(0); }
+}
+
+/* --- BUTTONS --- */
+#controls { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-bottom: 20px; z-index: 10; }
+.middle-row { display: flex; gap: 20px; }
+
+.shadow-btn, .dir-btn, .action-btn {
+  padding: 12px 20px; background: linear-gradient(145deg, #111, #0a0a0a);
+  border: 1px solid #333; color: #bbb; font-family: 'Orbitron';
+  font-weight: bold; border-radius: 4px; cursor: pointer;
+  transition: all 0.2s; text-transform: uppercase; letter-spacing: 1px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+}
+.shadow-btn:hover, .dir-btn:hover:not(:disabled) {
+  border-color: var(--shadow-primary); color: #fff; box-shadow: 0 0 15px rgba(157, 78, 221, 0.4);
+}
+.dir-btn { width: 70px; height: 70px; font-size: 24px; display: flex; align-items: center; justify-content: center;}
+.dir-btn:disabled { opacity: 0.2; cursor: not-allowed; }
+
+/* --- MODALS --- */
+.modal {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.9); display: flex; justify-content: center; align-items: center;
+  z-index: 100; backdrop-filter: blur(5px);
+}
+.shadow-box {
+  background: rgba(10, 10, 10, 0.95); border: 1px solid var(--shadow-primary);
+  padding: 40px; border-radius: 4px; text-align: center; max-width: 500px; width: 90%;
+  box-shadow: 0 0 40px rgba(157, 78, 221, 0.2); position: relative;
+}
+.hidden { display: none !important; }
+
+.shop-items { margin: 20px 0; }
+.shop-item { border: 1px solid #333; padding: 20px; background: rgba(0,0,0,0.5); }
+.buy-btn { background: var(--shadow-primary); color: white; border: none; padding: 10px 25px; cursor: pointer; margin-top: 10px; }
+.danger { background: #300; border-color: #500; color: #f55; }
+
+/* --- INVENTORY --- */
+.equip-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
+.equip-slot {
+  border: 1px dashed #444; padding: 15px; cursor: pointer;
+  transition: 0.2s; display: flex; flex-direction: column; align-items: center;
+}
+.equip-slot:hover { border-color: var(--shadow-primary); background: rgba(157, 78, 221, 0.1); }
+.equip-slot span { font-weight: bold; margin-bottom: 10px; color: #888; font-family: 'Orbitron'; }
+.skill-icon { font-size: 2rem; color: #555; }
+.skill-icon.active { color: var(--shadow-primary); text-shadow: 0 0 10px var(--shadow-primary); }
+.empty { opacity: 0.3; }
+
+/* --- CUTSCENE --- */
+#cutscene-stage {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: #000; z-index: 500; display: flex; justify-content: center; align-items: center;
+}
+
+.cinematic-bg {
+  position: absolute; width: 100%; height: 100%; 
+  background: radial-gradient(circle, #1a0b2e 0%, #000 80%);
+}
+
+#sys-text {
+  position: absolute; top: 20%; width: 100%; text-align: center;
+  font-family: 'Courier New', monospace; color: #ff3333; font-size: 2rem;
+  opacity: 0; letter-spacing: 5px; font-weight: bold;
+}
+
+.cutscene-actor {
+  position: absolute; bottom: 15%; width: 100px; text-align: center;
+  transition: all 1s ease;
+}
+#actor-player { left: 20%; opacity: 0; }
+#actor-enemy { right: 20%; }
+
+#cutscene-stage .stickman { transform: scale(1.5); position: relative; margin: 0 auto; bottom: auto; }
+.actor-name { margin-top: 20px; color: #fff; font-family: 'Orbitron'; letter-spacing: 2px; text-shadow: 0 0 10px #000; opacity: 0.7;}
+
+#arise-big {
+  font-family: 'Orbitron'; font-size: 10rem; font-weight: 900;
+  color: transparent; -webkit-text-stroke: 2px #fff;
+  position: absolute; z-index: 10; opacity: 0;
+  transform: scale(0.5);
+  text-shadow: 0 0 50px var(--shadow-primary);
+}
+
+.vignette {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  background: radial-gradient(circle, transparent 40%, black 90%);
+  pointer-events: none; animation: vignette-pulse 2s infinite;
+}
+
+/* CUTSCENE ANIMATIONS */
+.cs-appear { animation: fadeInUp 1s forwards; }
+.cs-rise { animation: summonRise 2s forwards; }
+.cs-die { animation: shadowDeath 2s forwards; }
+.cs-glitch { animation: glitchText 0.5s infinite; }
+.cs-explode { animation: textExplode 1s forwards; }
+
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes summonRise { 0% { transform: scale(1.5) translateY(50px); opacity: 0; } 50% { transform: scale(1.5) translateY(0); opacity: 1; } 100% { transform: scale(1.5) translateY(-20px); filter: brightness(2); } }
+@keyframes shadowDeath { 0% { opacity: 1; } 100% { opacity: 0; transform: scale(0); filter: blur(10px); background: var(--shadow-primary); } }
+@keyframes glitchText { 0% { opacity: 1; transform: skewX(0deg); } 20% { opacity: 0.8; transform: skewX(20deg); } 40% { opacity: 1; transform: skewX(-20deg); } 100% { opacity: 1; transform: skewX(0deg); } }
+@keyframes textExplode { 0% { opacity: 0; transform: scale(0.5); } 50% { opacity: 1; transform: scale(1.2); color: #fff; text-shadow: 0 0 50px var(--shadow-primary); } 100% { opacity: 0; transform: scale(2); } }
